@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista prodóktów - Zadanie rekrutacyjne</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="normalize.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.cart-button').click(function () {
+                $('#shopping-cart').toggleClass('none');
+                
+            });
+        });
+
+        $(document).on( 'click change',function(){
+            if($('.cart-item').length){
+                var totalPrice = 0.0;
+                var test = "";
+                $('.price').each(function(i, value){
+                    totalPrice += parseFloat(value.innerHTML) * parseFloat($(this).siblings('td').find('.amount').val());
+                });
+                $('#total-price').html(totalPrice.toFixed(2) + "$");
+            }else{
+                $('#total-price').html('0.0$');
+            }
+        });
+        function checkCart() {
+            if($('.cart-item').length){
+                    var totalPrice = 0.0;
+                    var test = "";
+                    $('.price').each(function(i, value){
+                        totalPrice += parseFloat(value.innerHTML) * parseFloat($(this).siblings('td').find('.amount').val());
+                    });
+                    $('#total-price').html(totalPrice.toFixed(2) + "$");
+                }else{
+                    $('#total-price').html('0.0$');
+                }
+        }
+    </script>
+    <script src="function.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-item"><h1>Products list</h1></div>
+        <div class="right"><button class="cart-button">&#x1f6d2;</button></div>
+    </nav>
+    <div id="shopping-cart" class="none">
+        <table>
+            <tbody id="shopping-items">
+                <tr class="" id="cart-empty">
+                    <td></td>
+                    <td>Your cart is empty</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Total price:</td>
+                    <td id="total-price">0.0$</td>
+                    <td><button class="x-button">Buy</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <main>
+        <div id="products-list">
+            <script>
+                $(document).ready(function(){
+                    $.getJSON("products.json", function(data){
+                        var list = "";
+                        for (let x in data) {
+                            list += "<div class='item' id='item-"+data[x].id+"' >";
+                            list += "<img id='item-img-"+data[x].id+"' src='images/"+data[x].options[0].values[0].photoSrc+"' alt='"+data[x].name+"'>";
+                            list += "<div><h1 id='item-name-"+data[x].id+"'>"+data[x].name+"</h1></div>";
+                            list += "<div><h1>"+data[x].price+"$ </h1><h1 class='oldPrice'> "+data[x].oldPrice+"$</h1></div>";
+                            var options = data[x].options;
+                            for (let y in options) {                                   
+                                list += "<p>"+options[y].name+":</p>";                                                                                                                                                                                                                                                                                                                             
+                                list += "<select class='"+options[y].name+"' id='item-"+options[y].name+"-"+data[x].id+"' onchange='changePhoto(this,"+data[x].id+");'>";
+                                var values = options[y].values;
+                                for(let z in values) {
+                                    list += '<option value="'+values[z].id+'" >'+values[z].name+'</option>'; 
+                                }
+                                list += "</select>";
+                                list += "<div class='none' id='price-"+options[y].name+"-"+data[x].id+"'></div>"
+                            } 
+                            list += "<br><br><div><input id='item-amount-"+data[x].id+"' type='number' value='1'><button class='buy-button' onclick='buy("+data[x].id+");'>Add to cart</button></div>";
+                            list += "<br></div>";
+                        }
+                        document.getElementById('products-list').innerHTML = list;
+                    }).fail(function(){
+                        console.log("An error has occurred.");
+                    });
+                });
+            </script>
+        </div>
+    </main>
+    <footer>
+        <p>Created by Bartek Krupa for Luxahaus</p>
+    </footer>
+</body>
+</html>
